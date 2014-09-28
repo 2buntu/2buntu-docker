@@ -16,8 +16,15 @@ RUN \
   git clone https://github.com/2buntu/2buntu-Django-Blog.git src && \
   pip install -r src/requirements.txt
 
-# Add the local_settings file
-ADD local_settings.py /root/src/twobuntu/local_settings.py
+# Create a volume for storing static files
+VOLUME /root/www
 
-# TODO:
-# - create volume for www data
+# Add the script for running the uWSGI server and local_settings file
+COPY run.sh /root/
+COPY local_settings.py /root/src/twobuntu/
+
+# Set the command for starting the uWSGI server
+CMD /root/run.sh
+
+# Expose port 8000 (intended to be linked to nginx)
+EXPOSE 8000
