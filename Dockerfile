@@ -10,18 +10,17 @@ RUN \
   apt-get install -y git python-pip python-dev libpq-dev libjpeg8-dev uwsgi uwsgi-plugin-python && \
   rm -rf /var/lib/apt/lists/*
 
-# Switch to the home directory, clone the repository, and install pip packages
-WORKDIR /root
-RUN \
-  git clone https://github.com/2buntu/2buntu-Django-Blog.git src && \
-  pip install -r src/requirements.txt
+# Switch to the /data directory, clone the repository, and add the local_settings file
+WORKDIR /data
+RUN git clone https://github.com/2buntu/2buntu-Django-Blog.git src
+COPY local_settings.py /data/src/twobuntu/
+
+# Install the required packages from PIP
+RUN pip install -r src/requirements.txt
 
 # Add the script for running the uWSGI server and local_settings file
 COPY run.sh /root/
-COPY local_settings.py /root/src/twobuntu/
-
-# Set the command for starting the uWSGI server
 CMD /root/run.sh
 
-# Expose port 8000 (intended to be linked to nginx or equivalent)
-EXPOSE 8000
+# Expose port 80 (intended to be linked to nginx or equivalent)
+EXPOSE 80

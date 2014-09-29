@@ -5,7 +5,7 @@ src/manage.py collectstatic --noinput
 src/manage.py migrate
 
 uwsgi \
-  --http-socket 0.0.0.0:8000 \
+  --http-socket 0.0.0.0:80 \
   --plugin python \
   --chdir /root/src \
   --module twobuntu.wsgi \
