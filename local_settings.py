@@ -3,8 +3,12 @@ Local settings for 2buntu are automatically gathered from environment variables
 set by Docker when the container is linked with others.
 """
 
-from os import environ
+from os import environ, makedirs, path
 from uuid import uuid4
+
+# Assume production unless told otherwise
+DEBUG = TEMPLATE_DEBUG = bool(environ.get('DEBUG', False))
+SERVER_EMAIL = DEFAULT_FROM_EMAIL = '2buntu <donotreply@2buntu.com>'
 
 # Assign environment variables to really short names to simplify the code
 psqlh = environ.get('POSTGRES_PORT_5432_TCP_ADDR', None)
@@ -12,9 +16,10 @@ psqlp = environ.get('POSTGRES_PORT_5432_TCP_PORT', None)
 redish = environ.get('REDIS_PORT_6379_TCP_ADDR', None)
 redisp = environ.get('REDIS_PORT_6379_TCP_PORT', None)
 
-# Assume production unless told otherwise
-DEBUG = TEMPLATE_DEBUG = bool(environ.get('DEBUG', False))
-SERVER_EMAIL = DEFAULT_FROM_EMAIL = '2buntu <donotreply@2buntu.com>'
+# Ensure that /data/db exists
+# (normally a race condition, but doesn't matter in this case)
+if not path.exists('/data/db'):
+    makedirs('/data/db')
 
 # Use PostgreSQL info if provided, otherwise use an in-memory SQLite database
 if psqlh and psqlp:
@@ -31,11 +36,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '/root/twobuntu.sqlite3',
+            'NAME': '/data/db/twobuntu.sqlite3',
         }
     }
 
-# Apply the Redis cache if the appropriate settings were provided
+# Activate the Redis cache if the appropriate settings were provided
 if redish and redisp:
     CACHES = {
         'default': {
@@ -48,8 +53,8 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
 # These are stored on a separate volume
-MEDIA_ROOT = '/root/www/media'
-STATIC_ROOT = '/root/www/static'
+MEDIA_ROOT = '/data/www/media'
+STATIC_ROOT = '/data/www/static'
 
 RECAPTCHA_PUBLIC_KEY = environ.get('RECAPTCHA_PUBLIC_KEY', '')
 RECAPTCHA_PRIVATE_KEY = environ.get('RECAPTCHA_PRIVATE_KEY', '')

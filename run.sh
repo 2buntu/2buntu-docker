@@ -8,4 +8,7 @@ uwsgi \
   --http-socket 0.0.0.0:8000 \
   --plugin python \
   --chdir /root/src \
-  --module twobuntu.wsgi
+  --module twobuntu.wsgi \
+  --static-map /media=/data/www/media \
+  --static-map /static=/data/www/static
+
