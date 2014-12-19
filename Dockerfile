@@ -7,7 +7,7 @@ MAINTAINER Nathan Osman <admin@quickmediasolutions.com>
 #  - get uWSGI up and running
 RUN \
   apt-get update && \
-  apt-get install -y git python-pip python-dev libpq-dev libjpeg8-dev uwsgi uwsgi-plugin-python && \
+  apt-get install -y git python3-pip libpq-dev libjpeg8-dev uwsgi uwsgi-plugin-python3 && \
   rm -rf /var/lib/apt/lists/*
 
 # Switch to the /data directory, clone the repository, and add the local_settings file
@@ -16,7 +16,7 @@ RUN git clone https://github.com/2buntu/2buntu-Django-Blog.git src
 COPY local_settings.py /data/src/twobuntu/
 
 # Install the required packages from PIP
-RUN pip install -r src/requirements.txt
+RUN pip3 install -r src/requirements.txt
 
 # Add the script for running the uWSGI server and local_settings file
 COPY run.sh /root/

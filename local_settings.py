@@ -6,20 +6,17 @@ set by Docker when the container is linked with others.
 from os import environ, makedirs, path
 from uuid import uuid4
 
-# Assume production unless told otherwise
+# Assume DEBUG & READ_ONLY are False unless told otherwise
 DEBUG = TEMPLATE_DEBUG = bool(environ.get('DEBUG', False))
-SERVER_EMAIL = DEFAULT_FROM_EMAIL = '2buntu <donotreply@2buntu.com>'
+READ_ONLY = bool(environ.get('READ_ONLY', False))
 
 # Assign environment variables to really short names to simplify the code
 psqlh = environ.get('POSTGRES_PORT_5432_TCP_ADDR', None)
 psqlp = environ.get('POSTGRES_PORT_5432_TCP_PORT', None)
+pfh = environ.get('POSTFIX_PORT_25_TCP_ADDR', None)
+pfp = environ.get('POSTFIX_PORT_25_TCP_PORT', None)
 redish = environ.get('REDIS_PORT_6379_TCP_ADDR', None)
 redisp = environ.get('REDIS_PORT_6379_TCP_PORT', None)
-
-# Ensure that /data/db exists
-# (normally a race condition, but doesn't matter in this case)
-if not path.exists('/data/db'):
-    makedirs('/data/db')
 
 # Use PostgreSQL info if provided, otherwise use an in-memory SQLite database
 if psqlh and psqlp:
@@ -33,12 +30,22 @@ if psqlh and psqlp:
         },
     }
 else:
+    # Ensure that /data/db exists
+    if not path.exists('/data/db'):
+        makedirs('/data/db')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': '/data/db/twobuntu.sqlite3',
         }
     }
+
+# Use SMTP settings if provided, otherwise, use the console
+if pfh and pfp:
+    EMAIL_HOST = pfh
+    EMAIL_PORT = pfp
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Activate the Redis cache if the appropriate settings were provided
 if redish and redisp:
@@ -56,8 +63,8 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = '/data/www/media'
 STATIC_ROOT = '/data/www/static'
 
-RECAPTCHA_PUBLIC_KEY = environ.get('RECAPTCHA_PUBLIC_KEY', '')
-RECAPTCHA_PRIVATE_KEY = environ.get('RECAPTCHA_PRIVATE_KEY', '')
+RECAPTCHA_SITE_KEY = environ.get('RECAPTCHA_SITE_KEY', '')
+RECAPTCHA_SECRET_KEY = environ.get('RECAPTCHA_SECRET_KEY', '')
 
 # If you are using Twitter integration, then you will need to supply values for these settings
 TWITTER = {
