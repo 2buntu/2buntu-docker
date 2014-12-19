@@ -31,8 +31,8 @@ Assuming that you have two containers named `postgres` and `redis`, deploy the 2
     docker run -d \
       -e DEBUG=true \
       -v /home/yourname/data:/data \
-      --link postgres:postgres
-      --link redis:redis
+      --link postgres:postgres \
+      --link redis:redis \
       --name 2buntu \
       2buntu/2buntu-django-blog
 
