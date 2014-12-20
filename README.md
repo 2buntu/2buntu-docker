@@ -6,7 +6,7 @@ This repository contains a Dockerfile and some helper scripts for building a con
 
 The 2buntu container can be deployed easily on a development machine for testing. In fact, only one important flag is required when launching the container:
 
-    docker run -d -e DEBUG=true --name 2buntu 2buntu/2buntu-django-blog
+    docker run -d -e DEBUG=true --name 2buntu 2buntu/blog
 
 (The `DEBUG` environment variable indicates to the container that the application should enable debug mode, which displays helpful tracebacks when errors are encountered.)
 
@@ -16,7 +16,7 @@ If you would like access to the source code directory, the static files, and the
       -e DEBUG=true \
       -v /home/yourname/data:/data \
       --name 2buntu \
-      2buntu/2buntu-django-blog
+      2buntu/blog
 
 ### Deploy the Container
 
@@ -34,12 +34,13 @@ Assuming that you have two containers named `postgres` and `redis`, deploy the 2
       --link postgres:postgres \
       --link redis:redis \
       --name 2buntu \
-      2buntu/2buntu-django-blog
+      2buntu/blog
 
-You will also want to explicitly set values for the following environment variables:
+You may also set values for the following environment variables:
 
- * `RECAPTCHA_PUBLIC_KEY`
- * `RECAPTCHA_PRIVATE_KEY`
+ * `READ_ONLY`
+ * `RECAPTCHA_SITE_KEY`
+ * `RECAPTCHA_SECRET_KEY`
  * `TWITTER_TOKEN`
  * `TWITTER_TOKEN_SECRET`
  * `TWITTER_CONSUMER_KEY`
