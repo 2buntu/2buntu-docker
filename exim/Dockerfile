@@ -1,11 +1,5 @@
-FROM phusion/baseimage:latest
+FROM 2buntu/base:latest
 MAINTAINER Nathan Osman <nathan@quickmediasolutions.com>
-
-# Use the init command in baseimage-docker
-CMD ["/sbin/my_init"]
-
-# Add the script that runs Exim
-ADD run /etc/service/exim4/
 
 # Since installation is not interactive, we need to "seed" answers to the
 # interactive questions - do that with debconf-set-selections
@@ -18,6 +12,9 @@ RUN \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y exim4-daemon-light && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Add the script that runs Exim
+ADD run /etc/service/exim4/
 
 # Expose port 25 (SMTP)
 EXPOSE 25
